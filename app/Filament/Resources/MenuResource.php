@@ -36,6 +36,7 @@ class MenuResource extends Resource
                     ->label('Price')
                     ->required()
                     ->placeholder('Price')
+                    ->prefix('Rp ')
                     ->mask(RawJs::make('$money($input)'))
                     ->stripCharacters(',')
                     ->numeric(),

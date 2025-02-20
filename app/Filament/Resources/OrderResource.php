@@ -47,11 +47,14 @@ class OrderResource extends Resource
                     ->default(0)
                     ->readOnly()
                     ->dehydrated()
+                    ->prefix('Rp ')
+                    ->mask(RawJs::make('$money($input)'))
                     ->reactive(),
 
                 Repeater::make('menu_items')
                     ->relationship()
                     ->label('Menu Items')
+                    ->dehydrated()
                     ->schema([
                         Select::make('id_menu')
                             ->label('Menu')
@@ -90,6 +93,8 @@ class OrderResource extends Resource
                         TextInput::make('total')
                             ->label('Item Total')
                             ->numeric()
+                            ->prefix('Rp ')
+                            ->mask(RawJs::make('$money($input)'))
                             ->readOnly(),
                     ])
                     ->columnSpanFull()
@@ -105,6 +110,15 @@ class OrderResource extends Resource
         $menuItems = $get('menu_items') ?? [];
         $orderTotal = collect($menuItems)->sum(fn($item) => ($item['total'] ?? 0));
         $set('total_order', $orderTotal);
+    }
+
+    public static function countTotalOrder($record)
+    {
+        $result = 0;
+        foreach ($record->menu_items as $item) {
+            $result += $item->quantity * $item->menu->price;
+        }
+        return $result;
     }
 
     public static function table(Table $table): Table
@@ -125,7 +139,7 @@ class OrderResource extends Resource
                 // count total dari menuitem where id_order = order.id 
                 TextColumn::make('total_order')
                     ->label('Total')
-                    ->searchable()
+                    ->getStateUsing(fn($record) => 'Rp ' . number_format(self::countTotalOrder($record), 0, ',', '.'))
                     ->sortable()
             ])
             ->filters([
