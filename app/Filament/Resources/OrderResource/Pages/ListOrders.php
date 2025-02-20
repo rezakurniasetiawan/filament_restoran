@@ -22,9 +22,7 @@ class ListOrders extends ListRecords
                 ExcelExport::make()->withColumns([
                     Column::make('customer.name')->heading('Customer Name'),
                     Column::make('customer.telephone')->heading('Customer Telephone'),
-                    Column::make('menu.name')->heading('Menu Name'),
-                    Column::make('quantity')->heading('Quantity'),
-                    Column::make('total')->heading('Total')->formatStateUsing(fn(string $state, $record): string => 'Rp ' . number_format((float) ($record->menu->harga * $record->quantity), 0, ',', '.')),
+                    Column::make('total_order')->heading('Total')->formatStateUsing(fn(string $state, $record): string => 'Rp ' . number_format((float) ($record->menu->harga * $record->quantity), 0, ',', '.')),
 
                 ]),
             ])
