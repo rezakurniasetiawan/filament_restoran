@@ -48,7 +48,7 @@ class OrderResource extends Resource
                     ->readOnly()
                     ->dehydrated()
                     ->prefix('Rp ')
-                    ->mask(RawJs::make('$money($input)'))
+                    // ->mask(RawJs::make('$money($input)'))
                     ->reactive(),
 
                 Repeater::make('menu_items')
@@ -79,7 +79,7 @@ class OrderResource extends Resource
                             ->numeric()
                             ->required()
                             ->default(1)
-                            // ->lazy()
+                            ->lazy()
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                 $menuId = $get('id_menu');
                                 $menu = Menu::find($menuId);
@@ -94,7 +94,7 @@ class OrderResource extends Resource
                             ->label('Item Total')
                             ->numeric()
                             ->prefix('Rp ')
-                            ->mask(RawJs::make('$money($input)'))
+                            // ->mask(RawJs::make('$money($input)'))
                             ->readOnly(),
                     ])
                     ->columnSpanFull()
@@ -139,7 +139,8 @@ class OrderResource extends Resource
                 // count total dari menuitem where id_order = order.id 
                 TextColumn::make('total_order')
                     ->label('Total')
-                    ->getStateUsing(fn($record) => 'Rp ' . number_format(self::countTotalOrder($record), 0, ',', '.'))
+                    ->searchable()
+                    // ->getStateUsing(fn($record) => 'Rp ' . number_format(self::countTotalOrder($record), 0, ',', '.'))
                     ->sortable()
             ])
             ->filters([
